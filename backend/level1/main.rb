@@ -1,41 +1,29 @@
 require "json"
 require "date"
+require "pry"
+require "active_record"
+require_relative "../environment.rb"
 
-class Director
-  def json
-    { rentals: rentals }.to_json
+class Main
+  def transform(data)
+    store_data!(data)
+    { "rentals" => rental_output }
   end
 
   private
 
-  def rentals
-    rental_hashes.map do |rental_hash|
-      rental = Rental.new(
-        rental_hash["id"], 
-        rental_hash["car_id"], 
-        rental_hash["start_date"], 
-        rental_hash["end_date"], 
-        rental_hash["distance"]
-      )
-      { id: rental.id, price: rental.price }
-    end
+  def rental_output
+    Rental.all.map { |rental| { "id" => rental.id, "price" => rental.price  } }
   end
 
-  def rental_hashes
-    @rental_hashes ||= JSON.parse(File.read("./level1/data.json"))["rentals"]
+  def store_data!(data)
+    data["cars"].each { |car_data| Car.create(car_data) }
+    data["rentals"].each { |rental_data| Rental.create(rental_data) }
   end
 end
 
-class Rental
-  attr_reader :id, :car_id, :start_date, :end_date, :distance
-
-  def initialize(id, car_id, start_date, end_date, distance)
-    @id         = id
-    @car_id     = car_id
-    @start_date = start_date
-    @end_date   = end_date
-    @distance   = distance
-  end
+class Rental < ActiveRecord::Base
+  belongs_to :car
 
   def price
     (distance * car.price_per_km) + (days * car.price_per_day)
@@ -43,33 +31,11 @@ class Rental
 
   private
 
-  def car
-    @car ||= Car.new(car_hash["id"], car_hash["price_per_day"], car_hash["price_per_km"])
-  end
-
-  def car_hash
-    @car_hash ||= cars.find { |car| car["id"] == car_id }
-  end
-
-  def cars
-    @cars ||= JSON.parse(File.read("./level1/data.json"))["cars"]
-  end
-
   def days
-    @days ||= (parsed_date(end_date) - parsed_date(start_date)).to_i + 1
-  end
-
-  def parsed_date(date_string)
-    Date.parse(date_string)
+    @days ||= (end_date - start_date).to_i + 1
   end
 end
 
-class Car
-  attr_reader :id, :price_per_day, :price_per_km
-
-  def initialize(id, price_per_day, price_per_km)
-    @id            = id
-    @price_per_day = price_per_day
-    @price_per_km  = price_per_km
-  end
+class Car < ActiveRecord::Base
+  has_one :rental
 end

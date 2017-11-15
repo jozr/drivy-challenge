@@ -1,0 +1,32 @@
+require "active_record"
+require "yaml"
+
+namespace :db do
+  config       = YAML::load(File.open("config/database.yml"))
+  config_admin = config.merge({ "database" => "postgres", "schema_search_path" => "public" })
+
+  desc "Create"
+  task :create do
+    ActiveRecord::Base.establish_connection(config_admin)
+    ActiveRecord::Base.connection.create_database(config["database"])
+    puts "Created"
+  end
+
+  desc "Migrate"
+  task :migrate do
+    ActiveRecord::Base.establish_connection(config)
+    ActiveRecord::Migrator.migrate("db/migrate/")
+    Rake::Task["db:schema"].invoke
+    puts "Migrated"
+  end
+
+  desc "Drop"
+  task :drop do
+    ActiveRecord::Base.establish_connection(config_admin)
+    ActiveRecord::Base.connection.drop_database(config["database"])
+    puts "Deleted"
+  end
+
+  desc "Reset"
+  task reset: [:drop, :create, :migrate]
+end

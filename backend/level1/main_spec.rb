@@ -1,11 +1,16 @@
 require "json"
 require_relative "main"
 
-describe Director do
+describe Main do
+  let(:data) { JSON.parse(File.read("./level1/data.json")) }
+  let(:output) { JSON.parse(File.read("./level1/output.json")) }
+
   it "should execute" do
-    director = Director.new
-    expect(JSON.parse(director.json)).to eq(
-      JSON.parse(File.read("./level1/output.json"))
-    )
+    Rental.delete_all
+    Car.delete_all
+    main = Main.new
+    expect(main.transform(data)).to eq(output)
+    Rental.delete_all
+    Car.delete_all
   end
 end
