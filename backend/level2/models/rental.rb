@@ -10,11 +10,13 @@ class Rental < ActiveRecord::Base
   private
 
   def price_for_distance
-    distance * car.price_per_km
+    @price_for_distance ||= distance * car.price_per_km
   end
 
   def price_for_time
-    [*1..days].reduce(0) { |sum, num_of_day| sum + price_per_day(num_of_day).to_i }
+    @price_for_time ||= [*1..days].reduce(0) do |sum, num_of_day| 
+      sum + price_per_day(num_of_day).to_i
+    end
   end
 
   def price_per_day(num_of_day)

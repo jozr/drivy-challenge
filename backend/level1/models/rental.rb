@@ -10,11 +10,11 @@ class Rental < ActiveRecord::Base
   private
 
   def price_for_distance
-    distance * car.price_per_km
+    @price_for_distance ||= distance * car.price_per_km
   end
 
   def price_for_time
-    days * car.price_per_day
+    @price_for_time ||= days * car.price_per_day
   end
 
   def days

@@ -14,9 +14,9 @@ class Main
   def rental_output
     Rental.all.map do |rental| 
       { 
-        "id"              => rental.id, 
-        "price"           => rental.price, 
-        "commission"      => rental.commission_info,
+        "id"         => rental.id, 
+        "price"      => rental.price, 
+        "commission" => rental.commission_info,
       } 
     end
   end
