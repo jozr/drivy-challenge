@@ -1,6 +1,25 @@
 # Drivy Backend Challenge
 
- Looking for a job? Check out our [open positions](https://en.drivy.com/jobs).
+## Josie's Notes
+
+Clone this repository and enter the backend folder.
+```bash
+git clone git@github.com:jozr/drivy-challenge.git
+cd backend
+```
+
+Ready the database.
+```bash
+bundle exec rake db:create
+bundle exec rake db:migrate
+```
+
+Run the tests of the intended level.
+```bash
+bundle exec rake test LEVEL=1
+# or
+bundle exec rspec ./level6
+```
 
 ## Guidelines
 
