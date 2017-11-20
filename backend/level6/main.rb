@@ -11,6 +11,7 @@ class Main
     modifications = data["rental_modifications"]
 
     if modifications
+      store_modifications!(modifications)
       { "rental_modifications" => rental_modifications }
     else
       { "rentals" => rentals }
@@ -30,6 +31,9 @@ class Main
   def store_data!(data)
     data["cars"].each { |car_data| Car.create(car_data) }
     data["rentals"].each { |rental_data| Rental.create(rental_data) }
-    data["rental_modifications"].each { |rental_mod_data| RentalModification.create(rental_mod_data) }
+  end
+
+  def store_modifications!(modifications)
+    modifications.each { |rental_mod_data| RentalModification.create(rental_mod_data) }
   end
 end

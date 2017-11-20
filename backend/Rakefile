@@ -1,5 +1,7 @@
 require "active_record"
 require "yaml"
+require "rspec"
+require "rspec/core/rake_task"
 
 namespace :db do
   config       = YAML::load(File.open("config/database.yml"))
@@ -28,4 +30,13 @@ namespace :db do
 
   desc "Reset"
   task reset: [:drop, :create, :migrate]
+end
+
+RSpec::Core::RakeTask.new("test") do |t|
+  config       = YAML::load(File.open("config/database.yml"))
+  config_admin = config.merge({ "database" => "postgres", "schema_search_path" => "public" })
+  ActiveRecord::Base.establish_connection(config)
+
+  t.rspec_opts = ["-Ilib", "--format documentation", "--color"]
+  t.pattern = ["level#{ENV['LEVEL']}"]
 end
