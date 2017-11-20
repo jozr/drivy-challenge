@@ -1,13 +1,10 @@
-require "active_record"
+require_relative "../lib/action_hash_helper"
 
 class Action < ActiveRecord::Base
+  include ActionHashHelper
   belongs_to :rental
 
   def to_hash
-    {
-      "who"    => who,
-      "type"   => amount < 0 ? "debit" : "credit",
-      "amount" => amount.abs,
-    }
+    hash_for(who, amount)
   end
 end

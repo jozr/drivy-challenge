@@ -1,4 +1,8 @@
+require_relative "../lib/action_hash_helper"
+
 class RentalModification < ActiveRecord::Base
+  include ActionHashHelper
+
   belongs_to :rental
   before_save :update_rental!
 
@@ -13,14 +17,7 @@ class RentalModification < ActiveRecord::Base
   private
 
   def modified_action_hashes
-    parties.map do |who|
-      amount = amount_for(who)
-      {
-        "who"    => who,
-        "type"   => amount < 0 ? "debit" : "credit",
-        "amount" => amount.abs,
-      }
-    end
+    parties.map { |who| hash_for(who, amount_for(who)) }
   end
 
   def amount_for(who)
