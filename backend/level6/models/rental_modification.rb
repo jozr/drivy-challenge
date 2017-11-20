@@ -26,7 +26,7 @@ class RentalModification < ActiveRecord::Base
   end
 
   def update_rental!
-    rental_attributes = self.attributes.select { |k, v| v && k != "rental_id" && k != "id" }
+    rental_attributes = attributes.select { |k, v| v && k != "rental_id" && k != "id" }
     rental.update(rental_attributes)
   end
 

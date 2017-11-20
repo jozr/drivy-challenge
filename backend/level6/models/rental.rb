@@ -5,7 +5,7 @@ class Rental < ActiveRecord::Base
   belongs_to :car
   has_many :actions
   has_many :rental_modifications
-  after_save :add_actions!
+  after_save :store_actions!
 
   def to_hash
     { 
@@ -20,9 +20,9 @@ class Rental < ActiveRecord::Base
 
   private
 
-  def add_actions!
+  def store_actions!
     ["driver", "owner", "insurance", "assistance", "drivy"].each do |who|
-      amount = self.send(:"#{who}_amount").to_i
+      amount = send(:"#{who}_amount").to_i
       Action.create(rental_id: id, who: who, amount: amount)
     end
   end
